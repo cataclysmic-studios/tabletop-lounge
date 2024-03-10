@@ -1,5 +1,5 @@
 {
-  "name": "mineblox",
+  "name": "board-games",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -21,8 +21,8 @@
     "eslint-plugin-roblox-ts": "^0.0.30",
     "prettier": "^2.3.2",
     "rbxts-transformer-flamework": "^1.1.1",
-    "roblox-ts": "^2.3.0",
-    "typescript": "^5.2.2"
+    "roblox-ts": "^2.3.0-dev-3a713b2",
+    "typescript": "5.3.3"
   },
   "dependencies": {
     "@flamework/components": "^1.1.1",
@@ -33,7 +33,6 @@
     "@rbxts/gamejoy": "^1.1.4",
     "@rbxts/janitor": "^1.15.7-ts.0",
     "@rbxts/object-utils": "^1.0.4",
-    "@rbxts/signal": "^1.1.1",
     "@rbxts/strict-map": "^1.0.2",
     "@rbxts/string-utils": "^1.0.3",
     "@rbxts/timer": "^0.0.9"
