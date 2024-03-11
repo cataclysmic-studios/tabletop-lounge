@@ -1,4 +1,3 @@
-import { BaseComponent } from "@flamework/components";
 import { Players, HttpService as HTTP } from "@rbxts/services";
 import { Janitor } from "@rbxts/janitor";
 import Object from "@rbxts/object-utils";
@@ -17,6 +16,12 @@ export abstract class BaseGameTable<A extends {} = {}, I extends GameTableModel 
 
   protected abstract seatOccupied(seat: Seat): void;
   protected abstract seatLeft(seat: Seat): void;
+
+  public getSatPlayers(): Player[] {
+    return this.getSeats()
+      .mapFiltered(seat => seat.Occupant?.Parent)
+      .mapFiltered(character => Players.GetPlayerFromCharacter(character));
+  }
 
   protected onStart(): void {
     for (const seat of this.getSeats()) {
@@ -56,12 +61,6 @@ export abstract class BaseGameTable<A extends {} = {}, I extends GameTableModel 
 
   protected getSeatJanitor(seat: Seat): Janitor {
     return this.seatJanitors[this.geatSeatID(seat)];
-  }
-
-  protected getSatPlayers(): Player[] {
-    return this.getSeats()
-      .mapFiltered(seat => seat.Occupant?.Parent)
-      .mapFiltered(character => Players.GetPlayerFromCharacter(character));
   }
 
   protected getSeats(): Seat[] {

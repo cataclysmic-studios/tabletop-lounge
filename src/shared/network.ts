@@ -1,5 +1,7 @@
 import { Networking } from "@flamework/networking";
 import { DataKey, DataValue, GameDataModel } from "./data-models/generic";
+import type { CardGame } from "./structs/game-types";
+import type CardType from "./structs/card-type";
 
 interface ServerEvents {
   data: {
@@ -14,9 +16,10 @@ interface ClientEvents {
   data: {
     update(key: DataKey, value: DataValue): void;
   };
-  game: {
+  gameTable: {
     toggleCamera(tableID: string, on: boolean): void;
-    ejectSeatOccupant(tableID: string): void;
+    ejectOccupant(tableID: string): void;
+    addCardHand(tableID: string, hand: CardType[], gameName: CardGame): void;
   };
 }
 

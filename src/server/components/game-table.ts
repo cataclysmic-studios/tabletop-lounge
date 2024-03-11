@@ -16,7 +16,7 @@ const COUNTDOWN_LENTH = Runtime.IsStudio() ? 3 : 20;
   tag: "GameTable",
 })
 export class GameTable extends BaseGameTable implements OnStart, LogStart {
-  private readonly id = HTTP.GenerateGUID();
+  public readonly id = HTTP.GenerateGUID();
   private readonly timerUI = Assets.UI.GameTimer.Clone();
 
   public constructor(
@@ -62,18 +62,18 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
 
   private startGame(): void {
     Log.info(`Started game of "${this.attributes.Game}"`);
-    Events.game.toggleCamera.broadcast(this.id, true);
-    this.games.start(this.attributes.Game, this.getSatPlayers());
+    Events.gameTable.toggleCamera.broadcast(this.id, true);
+    this.games.start(this);
     this.toggleSeats(false);
   }
 
   public concludeGame(): void {
-    Events.game.toggleCamera.broadcast(this.attributes.Game, false);
+    Events.gameTable.toggleCamera.broadcast(this.attributes.Game, false);
     this.toggleSeats(true);
     this.ejectSeatOccupants();
   }
 
   private ejectSeatOccupants(): void {
-    Events.game.ejectSeatOccupant.broadcast(this.id);
+    Events.gameTable.ejectOccupant.broadcast(this.id);
   }
 }

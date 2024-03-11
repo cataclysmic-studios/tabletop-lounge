@@ -11,6 +11,218 @@ interface ReplicatedFirst extends Instance {
       };
     };
     Games: Folder & {
+      Uno: Folder & {
+        Cards: Folder & {
+          Wildcard: UnionOperation & {
+            Logo: Decal;
+            WildChange: Decal;
+          };
+          DrawFour: UnionOperation & {
+            ["+4"]: Decal;
+            Logo: Decal;
+          };
+          Blue: Folder & {
+            Skip: UnionOperation & {
+              Skip: Decal;
+              Logo: Decal;
+            };
+            ["3"]: UnionOperation & {
+              ["3"]: Decal;
+              Logo: Decal;
+            };
+            ["2"]: UnionOperation & {
+              Logo: Decal;
+              ["2"]: Decal;
+            };
+            ["5"]: UnionOperation & {
+              ["5"]: Decal;
+              Logo: Decal;
+            };
+            ["4"]: UnionOperation & {
+              Logo: Decal;
+              ["4"]: Decal;
+            };
+            ["7"]: UnionOperation & {
+              ["7"]: Decal;
+              Logo: Decal;
+            };
+            ["6"]: UnionOperation & {
+              Logo: Decal;
+              ["6"]: Decal;
+            };
+            ["9"]: UnionOperation & {
+              ["9"]: Decal;
+              Logo: Decal;
+            };
+            ["8"]: UnionOperation & {
+              Logo: Decal;
+              ["8"]: Decal;
+            };
+            Reverse: UnionOperation & {
+              Logo: Decal;
+              Reverse: Decal;
+            };
+            ["1"]: UnionOperation & {
+              ["1"]: Decal;
+              Logo: Decal;
+            };
+            DrawTwo: UnionOperation & {
+              Logo: Decal;
+              ["+2"]: Decal;
+            };
+          };
+          Green: Folder & {
+            ["1"]: UnionOperation & {
+              ["1"]: Decal;
+              Logo: Decal;
+            };
+            ["3"]: UnionOperation & {
+              ["3"]: Decal;
+              Logo: Decal;
+            };
+            ["2"]: UnionOperation & {
+              Logo: Decal;
+              ["2"]: Decal;
+            };
+            ["5"]: UnionOperation & {
+              ["5"]: Decal;
+              Logo: Decal;
+            };
+            ["4"]: UnionOperation & {
+              Logo: Decal;
+              ["4"]: Decal;
+            };
+            ["7"]: UnionOperation & {
+              ["7"]: Decal;
+              Logo: Decal;
+            };
+            ["6"]: UnionOperation & {
+              Logo: Decal;
+              ["6"]: Decal;
+            };
+            ["9"]: UnionOperation & {
+              ["9"]: Decal;
+              Logo: Decal;
+            };
+            ["8"]: UnionOperation & {
+              Logo: Decal;
+              ["8"]: Decal;
+            };
+            Reverse: UnionOperation & {
+              Logo: Decal;
+              Reverse: Decal;
+            };
+            Skip: UnionOperation & {
+              Skip: Decal;
+              Logo: Decal;
+            };
+            DrawTwo: UnionOperation & {
+              Logo: Decal;
+              ["+2"]: Decal;
+            };
+          };
+          Yellow: Folder & {
+            ["1"]: UnionOperation & {
+              ["1"]: Decal;
+              Logo: Decal;
+            };
+            ["3"]: UnionOperation & {
+              ["3"]: Decal;
+              Logo: Decal;
+            };
+            ["2"]: UnionOperation & {
+              Logo: Decal;
+              ["2"]: Decal;
+            };
+            ["5"]: UnionOperation & {
+              ["5"]: Decal;
+              Logo: Decal;
+            };
+            ["4"]: UnionOperation & {
+              Logo: Decal;
+              ["4"]: Decal;
+            };
+            ["7"]: UnionOperation & {
+              ["7"]: Decal;
+              Logo: Decal;
+            };
+            ["6"]: UnionOperation & {
+              Logo: Decal;
+              ["6"]: Decal;
+            };
+            ["9"]: UnionOperation & {
+              ["9"]: Decal;
+              Logo: Decal;
+            };
+            ["8"]: UnionOperation & {
+              Logo: Decal;
+              ["8"]: Decal;
+            };
+            Reverse: UnionOperation & {
+              Logo: Decal;
+              Reverse: Decal;
+            };
+            DrawTwo: UnionOperation & {
+              Logo: Decal;
+              ["+2"]: Decal;
+            };
+            Skip: UnionOperation & {
+              Skip: Decal;
+              Logo: Decal;
+            };
+          };
+          Red: Folder & {
+            Skip: UnionOperation & {
+              Skip: Decal;
+              Logo: Decal;
+            };
+            ["3"]: UnionOperation & {
+              ["3"]: Decal;
+              Logo: Decal;
+            };
+            ["2"]: UnionOperation & {
+              Logo: Decal;
+              ["2"]: Decal;
+            };
+            ["5"]: UnionOperation & {
+              ["5"]: Decal;
+              Logo: Decal;
+            };
+            ["4"]: UnionOperation & {
+              Logo: Decal;
+              ["4"]: Decal;
+            };
+            ["7"]: UnionOperation & {
+              ["7"]: Decal;
+              Logo: Decal;
+            };
+            ["6"]: UnionOperation & {
+              Logo: Decal;
+              ["6"]: Decal;
+            };
+            ["9"]: UnionOperation & {
+              ["9"]: Decal;
+              Logo: Decal;
+            };
+            ["8"]: UnionOperation & {
+              Logo: Decal;
+              ["8"]: Decal;
+            };
+            Reverse: UnionOperation & {
+              Logo: Decal;
+              Reverse: Decal;
+            };
+            DrawTwo: UnionOperation & {
+              Logo: Decal;
+              ["+2"]: Decal;
+            };
+            ["1"]: UnionOperation & {
+              ["1"]: Decal;
+              Logo: Decal;
+            };
+          };
+        };
+      }
       Chess: Folder & {
         Board: Model & {
           Squares: Folder & {

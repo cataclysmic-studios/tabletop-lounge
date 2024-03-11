@@ -22,6 +22,16 @@ export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
   );
 }
 
+export function shuffle<T>(array: T[]): T[] {
+  // Fisher-Yates shuffle algorithm
+  const shuffledArray = [...array];
+  for (let i = shuffledArray.size() - 1; i > 0; i--) {
+    const j = math.floor(math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
+}
+
 export async function getInstancePath(instance: Instance): Promise<string> {
   let path = instance.GetFullName()
     .gsub("Workspace", "World")[0]
@@ -65,17 +75,13 @@ export function reverse<T extends defined>(arr: T[]): T[] {
   return arr.map((_, i) => arr[arr.size() - 1 - i]);
 }
 
-export function slice<T extends defined>(arr: T[], start: number, finish?: number): T[] {
-  const length = arr.size();
-
-  // Handling negative indices
+export function slice<T extends defined>(array: T[], start: number, finish?: number): T[] {
+  const length = array.size();
   const startIndex = start < 0 ? max(length + start, 0) : min(start, length);
   const endIndex = finish === undefined ? length : finish < 0 ? max(length + finish, 0) : min(finish, length);
-
-  // Creating a new array with sliced elements
   const slicedArray: T[] = [];
   for (let i = startIndex; i < endIndex; i++)
-    slicedArray.push(arr[i]);
+    slicedArray.push(array[i]);
 
   return slicedArray;
 }
@@ -196,4 +202,14 @@ export function parseSuffixedNumber(suffixed: string): number {
   }
 
   return tonumber(numberPart)!;
+}
+
+
+/**
+ * Returns 0 if the number is close enough to 0 by `epsilon`
+ * @param n
+ * @param epsilon
+ */
+export function flattenNumber(n: number, epsilon = 0.001): number {
+  return abs(n) < epsilon ? 0 : n;
 }

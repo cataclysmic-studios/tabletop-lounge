@@ -44,7 +44,7 @@ export class LoadScreen extends DestroyableComponent<Attributes, PlayerGui["Load
     tween(
       this.background.Logo,
       new TweenInfoBuilder()
-        .SetTime(1.5)
+        .SetTime(1.25)
         .SetEasingStyle(Enum.EasingStyle.Back),
 
       { Size: size }
