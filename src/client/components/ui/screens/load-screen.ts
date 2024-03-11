@@ -4,7 +4,7 @@ import { TweenInfoBuilder } from "@rbxts/builders";
 
 import { PlayerGui } from "shared/utilities/client";
 import { tween } from "shared/utilities/ui";
-import DestroyableComponent from "client/base-components/destroyable";
+import DestroyableComponent from "shared/base-components/destroyable";
 import Log from "shared/logger";
 
 import type { UIEffectsController } from "client/controllers/ui-effects";
@@ -26,7 +26,7 @@ export class LoadScreen extends DestroyableComponent<Attributes, PlayerGui["Load
   ) { super(); }
 
   public onStart(): void {
-    Log.component("LoadScreen", this);
+    Log.client_component("LoadScreen", this);
     this.instance.Enabled = true;
     this.janitor.Add(this.instance);
 

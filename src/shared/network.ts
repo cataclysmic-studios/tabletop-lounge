@@ -2,18 +2,28 @@ import { Networking } from "@flamework/networking";
 import { DataKey, DataValue, GameDataModel } from "./data-models/generic";
 
 interface ServerEvents {
-  initializeData(): void;
-  dataLoaded(): void;
-  setData(key: DataKey, value: DataValue): void;
-  incrementData(key: ExtractKeys<GameDataModel, number>, amount?: number): void;
+  data: {
+    initialize(): void;
+    loaded(): void;
+    set(key: DataKey, value: DataValue): void;
+    increment(key: ExtractKeys<GameDataModel, number>, amount?: number): void;
+  };
 }
 
 interface ClientEvents {
-  dataUpdate(key: DataKey, value: DataValue): void;
+  data: {
+    update(key: DataKey, value: DataValue): void;
+  };
+  game: {
+    toggleCamera(tableID: string, on: boolean): void;
+    ejectSeatOccupant(tableID: string): void;
+  };
 }
 
 interface ServerFunctions {
-  getData(key: DataKey): DataValue;
+  data: {
+    get(key: DataKey): DataValue;
+  };
 }
 
 interface ClientFunctions {}

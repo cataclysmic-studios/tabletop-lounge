@@ -5,17 +5,14 @@ import { DataKey, DataValue, DataKeys } from "shared/data-models/generic";
 import { Events, Functions } from "server/network";
 import Log from "shared/logger";
 
-const { initializeData, setData, incrementData, dataLoaded, dataUpdate } = Events;
-const { getData } = Functions;
-
 @Service()
-export class DataService implements OnInit {	
+export class DataService implements OnInit {
 	public onInit(): void {
 		DataStore2.Combine("DATA", ...DataKeys);
-		initializeData.connect((player) => this.setup(player));
-		setData.connect((player, key, value) => this.set(player, key, value));
-		incrementData.connect((player, key, amount) => this.increment(player, key, amount))
-		getData.setCallback((player, key) => this.get(player, key));
+		Events.data.initialize.connect((player) => this.setup(player));
+		Events.data.set.connect((player, key, value) => this.set(player, key, value));
+		Events.data.increment.connect((player, key, amount) => this.increment(player, key, amount))
+		Functions.data.get.setCallback((player, key) => this.get(player, key));
 	}
 
 	public increment(player: Player, key: DataKey, amount = 1): void {
@@ -38,9 +35,9 @@ export class DataService implements OnInit {
     // using the same examples:
     this.initialize(player, "gold", 100);
     this.initialize(player, "gems", 0);
-		
+
 		Log.info("Initialized data");
-		dataLoaded.predict(player);
+		Events.data.loaded.predict(player);
 	}
 
 	private initialize<T extends DataValue = DataValue>(
@@ -61,7 +58,7 @@ export class DataService implements OnInit {
 		value: T
 	): void {
 
-		dataUpdate(player, key, value);
+		Events.data.update(player, key, value);
 	}
 
 	private getStore<T extends DataValue = DataValue>(player: Player, key: DataKey): DataStore2<T> {
