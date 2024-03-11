@@ -1,4 +1,4 @@
-import { ReplicatedFirst } from "@rbxts/services";
+import { ReplicatedFirst, RunService as Runtime } from "@rbxts/services";
 import StringUtils from "@rbxts/string-utils";
 
 import { StorableVector3 } from "../data-models/utility";
@@ -20,6 +20,19 @@ export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {
     new Vector3(x - wsx + areaShrink, y - wsy, z - wsz + areaShrink),
     new Vector3(x + wsx - areaShrink, y + wsy, z + wsz - areaShrink)
   );
+}
+
+export async function getInstancePath(instance: Instance): Promise<string> {
+  let path = instance.GetFullName()
+    .gsub("Workspace", "World")[0]
+    .gsub("PlayerGui", "UI")[0];
+
+  if (Runtime.IsClient()) {
+    const { Player } = await import("./client");
+    path = path.gsub(`Players.${Player.Name}.`, "")[0];
+  }
+
+  return path;
 }
 
 export function removeDuplicates<T extends defined>(array: T[]): T[] {

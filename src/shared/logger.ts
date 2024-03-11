@@ -1,4 +1,5 @@
 import { BaseComponent } from "@flamework/components";
+import { getInstancePath } from "./utilities/helpers";
 
 type LogFunctionName = ExtractKeys<typeof Log, Callback>;
 
@@ -27,7 +28,7 @@ namespace Log {
    */
   export async function client_component(name: string, component: BaseComponent): Promise<void> {
     const { Player } = await import("./utilities/client");
-    log("client_component", `Started ${name} on ${component.instance.GetFullName().gsub(`Players.${Player.Name}.`, "")[0]}`);
+    log("client_component", `Started ${name} on ${getInstancePath(component.instance)}`);
   }
 
   /**
@@ -35,7 +36,7 @@ namespace Log {
    * @param component The component itself
    */
   export function server_component(name: string, component: BaseComponent): void {
-    log("server_component", `Started ${name} on ${component.instance.GetFullName()}`);
+    log("server_component", `Started ${name} on ${getInstancePath(component.instance)}`);
   }
 
   /**
