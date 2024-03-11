@@ -1,16 +1,3 @@
-# My Flamework Template
+# Board Games (untitled game)
 
-This is my own pre-configured template you can use for your Roblox TypeScript projects that use [Flamework](https://fireboltofdeath.dev/docs/flamework/).  
-It includes a few extra utilities.
-
-## Usage
-
-First, create the folder on your computer where you want your project to be stored.
-Then, open a terminal at that directory and run the following commands:
-
-```console
-npx degit R-unic/flamework-template
-npm i
-```
-
-That's it! The template has been installed. For further information on how to use Flamework in your project, please see [here](https://fireboltofdeath.dev/docs/flamework).
+This is a hangout game where you can choose from a selection of classic board and card games, and play against your friends or meet new people.
