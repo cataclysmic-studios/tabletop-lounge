@@ -1,7 +1,15 @@
 import { BaseComponent } from "@flamework/components";
 
-const log = (category: keyof typeof Log, message: string): void =>
+type LogFunctionName = ExtractKeys<typeof Log, Callback>;
+
+const DISABLED: Partial<Record<LogFunctionName, boolean>> = {
+  component: true
+};
+
+const log = (category: LogFunctionName, message: string): void => {
+  if (DISABLED[category]) return;
   print(`[${category.upper()}]: ${message}`);
+}
 
 namespace Log {
   export function info(message: string): void {

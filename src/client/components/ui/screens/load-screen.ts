@@ -7,6 +7,8 @@ import { tween } from "shared/utilities/ui";
 import DestroyableComponent from "client/base-components/destroyable";
 import Log from "shared/logger";
 
+import type { UIEffectsController } from "client/controllers/ui-effects";
+
 interface Attributes {
   Delay: number;
   Lifetime: number;
@@ -19,6 +21,10 @@ interface Attributes {
 export class LoadScreen extends DestroyableComponent<Attributes, PlayerGui["LoadScreen"]> implements OnStart {
   private readonly background = this.instance.Background;
 
+  public constructor(
+    private readonly uiEffects: UIEffectsController
+  ) { super(); }
+
   public onStart(): void {
     Log.component("LoadScreen", this);
     this.instance.Enabled = true;
@@ -28,7 +34,10 @@ export class LoadScreen extends DestroyableComponent<Attributes, PlayerGui["Load
     this.background.Logo.Size = new UDim2;
     task.delay(this.attributes.Delay, () => {
       this.startLogoAnimation(logoSize);
-      task.delay(this.attributes.Lifetime, () => this.destroy());
+      task.delay(this.attributes.Lifetime, async () => {
+        await this.uiEffects.blackFade();
+        this.destroy();
+      });
     });
   }
 
