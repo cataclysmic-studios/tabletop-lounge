@@ -11,6 +11,7 @@ import Log from "shared/logger";
 import type { LogStart } from "shared/hooks";
 import type { GamesService } from "server/services/games";
 
+const COUNTDOWN_LENTH = Runtime.IsStudio() ? 3 : 20;
 @Component({
   tag: "GameTable",
 })
@@ -40,9 +41,7 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
   }
 
   private startGameTimer(): void {
-    Log.info("Started game countdown timer");
-    const length = Runtime.IsStudio() ? 5 : 20;
-    const timer = new Timer(length);
+    const timer = new Timer(COUNTDOWN_LENTH);
     const updateUI = (remaining: number) => this.timerUI.Countdown.Remaining.Text = toRemainingTime(remaining);
 
     timer.secondReached.Connect(updateUI);
@@ -56,7 +55,7 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
       this.timerUI.Countdown.Enabled = false;
     });
 
-    updateUI(length);
+    updateUI(COUNTDOWN_LENTH);
     this.timerUI.Countdown.Enabled = true;
     timer.start();
   }

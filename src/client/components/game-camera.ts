@@ -6,6 +6,7 @@ import { TweenInfoBuilder } from "@rbxts/builders";
 import { tween } from "shared/utilities/ui";
 import GameCameraState from "shared/structs/game-camera-state";
 import Log from "shared/logger";
+import { Player } from "shared/utilities/client";
 
 @Component({ tag: "GameCamera" })
 export class GameCamera extends BaseComponent<{}, Camera> implements OnStart {
@@ -17,7 +18,8 @@ export class GameCamera extends BaseComponent<{}, Camera> implements OnStart {
   ) { super(); }
 
   public onStart(): void {
-    this.instance.CFrame = this.getCFrame();
+    this.instance.CameraType = Enum.CameraType.Scriptable;
+    this.update();
   }
 
   public setState(state: GameCameraState): void {
@@ -31,27 +33,30 @@ export class GameCamera extends BaseComponent<{}, Camera> implements OnStart {
   }
 
   public toggle(on: boolean): void {
-    World.CurrentCamera = on ? this.instance : this.defaultCamera;
+    if (on)
+      for (const gameCamera of this.components.getAllComponents<GameCamera>()) {
+        if (gameCamera === this) continue;
+        gameCamera.toggle(false);
+      }
 
-    if (!on) return;
-    for (const gameCamera of this.components.getAllComponents<GameCamera>()) {
-      if (gameCamera === this) continue;
-      gameCamera.toggle(false);
-    }
+    World.CurrentCamera = on ? this.instance : this.defaultCamera;
   }
 
   private update(): void {
     const info = new TweenInfoBuilder()
       .SetTime(0.6);
 
-    tween(this.instance, info, { CFrame: this.getCFrame() });
+    tween(this.instance, info, {
+      CFrame: this.getCFrame(),
+      FieldOfView: this.state === GameCameraState.Personal ? 60 : 70
+    });
   }
 
   private getCFrame(): CFrame {
     const position = this.getDefaultPosition();
     switch(this.state) {
       case GameCameraState.Personal:
-        return CFrame.lookAt(position, new Vector3(0, -1, 0));
+        return CFrame.lookAlong(position, this.getSeat().CFrame.UpVector.mul(-2.5).add(this.getSeat().CFrame.LookVector))
       case GameCameraState.Center:
         return CFrame.lookAt(position, this.getGameTable().Table.Top.Position);
     }
