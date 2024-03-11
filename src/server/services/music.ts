@@ -1,11 +1,13 @@
 import type { Components } from "@flamework/components";
 import { Service, type OnStart } from "@flamework/core";
 
-import type { Speaker } from "server/components/speaker";
 import { Assets } from "shared/utilities/helpers";
 
+import type { LogStart } from "shared/hooks";
+import type { Speaker } from "server/components/speaker";
+
 @Service()
-export class MusicService implements OnStart {
+export class MusicService implements OnStart, LogStart {
   public constructor(
     private readonly components: Components
   ) {}

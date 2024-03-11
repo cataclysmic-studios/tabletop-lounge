@@ -3,9 +3,10 @@ import { TweenInfoBuilder } from "@rbxts/builders";
 
 import { PlayerGui } from "shared/utilities/client";
 import { tween } from "shared/utilities/ui";
+import type { LogStart } from "shared/hooks";
 
 @Controller()
-export class UIEffectsController implements OnInit {
+export class UIEffectsController implements OnInit, LogStart {
   private readonly screen = new Instance("ScreenGui", PlayerGui);
   private readonly blackFrame = new Instance("Frame", this.screen);
 

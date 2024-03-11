@@ -4,12 +4,12 @@ import { Component, type Components } from "@flamework/components";
 import { Events } from "client/network";
 import { Character, Player } from "shared/utilities/client";
 import { BaseGameTable } from "shared/base-components/base-game-table";
-import Log from "shared/logger";
 
+import type { LogStart } from "shared/hooks";
 import type { GameCamera } from "./game-camera";
 
 @Component({ tag: "GameTable" })
-export class GameTable extends BaseGameTable implements OnStart {
+export class GameTable extends BaseGameTable implements OnStart, LogStart {
   protected readonly gameCameras: Record<string, GameCamera> = {};
 
   public constructor(
@@ -35,8 +35,6 @@ export class GameTable extends BaseGameTable implements OnStart {
 
     for (const seat of this.getSeats())
       this.gameCameras[this.geatSeatID(seat)] = this.janitor.Add(this.components.addComponent<GameCamera>(new Instance("Camera", seat)), "destroy");
-
-    Log.client_component("GameTable", this);
   }
 
   protected seatOccupied(seat: Seat): void {

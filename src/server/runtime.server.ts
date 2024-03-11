@@ -3,6 +3,7 @@ import { FlameworkIgnitionException } from "shared/exceptions";
 
 try {
 	Flamework.addPaths("src/server/components");
+	Flamework.addPaths("src/server/hook-managers");
 	Flamework.addPaths("src/server/services");
 	Flamework.ignite();
 } catch (e) {

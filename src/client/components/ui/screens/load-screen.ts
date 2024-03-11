@@ -5,8 +5,8 @@ import { TweenInfoBuilder } from "@rbxts/builders";
 import { PlayerGui } from "shared/utilities/client";
 import { tween } from "shared/utilities/ui";
 import DestroyableComponent from "shared/base-components/destroyable";
-import Log from "shared/logger";
 
+import type { LogStart } from "shared/hooks";
 import type { UIEffectsController } from "client/controllers/ui-effects";
 
 interface Attributes {
@@ -18,7 +18,7 @@ interface Attributes {
   tag: "LoadScreen",
   ancestorWhitelist: [ PlayerGui ]
 })
-export class LoadScreen extends DestroyableComponent<Attributes, PlayerGui["LoadScreen"]> implements OnStart {
+export class LoadScreen extends DestroyableComponent<Attributes, PlayerGui["LoadScreen"]> implements OnStart, LogStart {
   private readonly background = this.instance.Background;
 
   public constructor(
@@ -26,7 +26,6 @@ export class LoadScreen extends DestroyableComponent<Attributes, PlayerGui["Load
   ) { super(); }
 
   public onStart(): void {
-    Log.client_component("LoadScreen", this);
     this.instance.Enabled = true;
     this.janitor.Add(this.instance);
 

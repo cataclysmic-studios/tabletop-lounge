@@ -5,8 +5,10 @@ import { DataKey, DataValue, DataKeys } from "shared/data-models/generic";
 import { Events, Functions } from "server/network";
 import Log from "shared/logger";
 
+import type { LogStart } from "shared/hooks";
+
 @Service()
-export class DataService implements OnInit {
+export class DataService implements OnInit, LogStart {
 	public onInit(): void {
 		DataStore2.Combine("DATA", ...DataKeys);
 		Events.data.initialize.connect((player) => this.setup(player));

@@ -8,12 +8,13 @@ import { Assets, toRemainingTime } from "shared/utilities/helpers";
 import { BaseGameTable } from "shared/base-components/base-game-table";
 import Log from "shared/logger";
 
-import type { GamesService } from "server/services/games-service";
+import type { LogStart } from "shared/hooks";
+import type { GamesService } from "server/services/games";
 
 @Component({
   tag: "GameTable",
 })
-export class GameTable extends BaseGameTable implements OnStart {
+export class GameTable extends BaseGameTable implements OnStart, LogStart {
   private readonly id = HTTP.GenerateGUID();
   private readonly timerUI = Assets.UI.GameTimer.Clone();
 
@@ -23,7 +24,6 @@ export class GameTable extends BaseGameTable implements OnStart {
 
   public onStart(): void {
     super.onStart();
-    Log.server_component("GameTable", this);
     this.timerUI.CFrame = this.instance.GameIcon.CFrame.sub(new Vector3(0, 2, 0));
     this.timerUI.Countdown.Enabled = false;
     this.timerUI.Parent = this.instance;
