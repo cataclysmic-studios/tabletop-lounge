@@ -1,10 +1,12 @@
 import type { OnStart } from "@flamework/core";
 import { Component, type Components } from "@flamework/components";
 import { Workspace as World } from "@rbxts/services";
+import { TweenInfoBuilder } from "@rbxts/builders";
 
 import { Events } from "client/network";
 import { Character, Player } from "shared/utilities/client";
 import { Assets } from "shared/utilities/helpers";
+import { tween } from "shared/utilities/ui";
 import { BaseGameTable } from "shared/base-components/base-game-table";
 import { UnoSuit } from "shared/structs/uno";
 
@@ -12,11 +14,15 @@ import type { LogStart } from "shared/hooks";
 import type { GameCamera } from "./game-camera";
 import type Game from "shared/structs/game";
 import type CardType from "shared/structs/card-type";
+import Log from "shared/logger";
 
 const { pi, sin, cos, floor } = math;
 
 const CARD_HAND_WIDTH = 4;
 const CARD_DISTANCE = 2.25;
+const CARD_HOVER_OFFSET = 0.65;
+const CARD_HOVER_INFO = new TweenInfoBuilder()
+  .SetTime(0.25);
 
 function arrayToEvenField(array: defined[]): number[] {
   const middleIndex = floor(array.size() / 2);
@@ -26,6 +32,7 @@ function arrayToEvenField(array: defined[]): number[] {
 @Component({ tag: "GameTable" })
 export class GameTable extends BaseGameTable implements OnStart, LogStart {
   protected readonly gameCameras: Record<string, GameCamera> = {};
+  private turn?: Player;
 
   public constructor(
     private readonly components: Components
@@ -34,6 +41,10 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
   public onStart(): void {
     super.onStart();
 
+    this.janitor.Add(Events.gameTable.turnChanged.connect((tableID, turn) => {
+      if (this.getID() !== tableID) return;
+      this.turn = turn;
+    }))
     this.janitor.Add(Events.gameTable.addCardHand.connect((tableID, hand, gameName) => {
       if (this.getID() !== tableID) return;
       this.addCardHand(gameName, hand);
@@ -69,7 +80,7 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
       const cardModel = <UnionOperation>(card.suit === UnoSuit.None ? allCardModels.FindFirstChild(card.name) : allCardModels.FindFirstChild(card.suit)?.FindFirstChild(card.name))?.Clone();
       const i = hand.indexOf(card);
       const angle = angleIncrement * (i + 0.5);
-      cardModel.CFrame = handCFrame
+      const cframe = handCFrame
         .add(seat.CFrame.LookVector.mul(radius / 12 * sin(angle)))
         .add(new Vector3(
           0,
@@ -77,8 +88,34 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
           (radius / 4 * math.abs(arrayToEvenField(hand)[i] / (hand.size() ** 0.02))) * cos(angle)
         ));
 
+      cardModel.CFrame = cframe;
       cardModel.Orientation = cardModel.Orientation.add(this.instance.Table.Top.Orientation).add(new Vector3(0, 0, 90));
       cardModel.Parent = World.GameProps.Cards.Uno.Hands;
+
+      const clickDetector = new Instance("ClickDetector", cardModel);
+      const selectionBox = new Instance("SelectionBox", cardModel);
+      const selectionBoxTrans = 0.5;
+      selectionBox.LineThickness = 0.01;
+      selectionBox.Transparency = 1;
+      selectionBox.Color3 = Color3.fromRGB(252, 255, 105);
+      selectionBox.Adornee = cardModel;
+
+      clickDetector.MouseClick.Connect(() => {
+        if (this.turn !== Player) return;
+        Log.info("Chose card");
+        Events.gameTable.advanceTurn(this.getID());
+        // put card down
+        // Events.gameTable.uno.chooseCard()
+        // Events.gameTable.uno.drawCard()
+      });
+      clickDetector.MouseHoverEnter.Connect(() => {
+        tween(selectionBox, CARD_HOVER_INFO, { Transparency: selectionBoxTrans });
+        tween(cardModel, CARD_HOVER_INFO, { Position: cframe.Position.add(cardModel.CFrame.RightVector.mul(CARD_HOVER_OFFSET)) });
+      });
+      clickDetector.MouseHoverLeave.Connect(() => {
+        tween(selectionBox, CARD_HOVER_INFO, { Transparency: 1 });
+        tween(cardModel, CARD_HOVER_INFO, { Position: cframe.Position });
+      });
     }
   }
 

@@ -33,6 +33,7 @@
     "@rbxts/gamejoy": "^1.1.4",
     "@rbxts/janitor": "^1.15.7-ts.0",
     "@rbxts/object-utils": "^1.0.4",
+    "@rbxts/signal": "^1.1.1",
     "@rbxts/strict-map": "^1.0.2",
     "@rbxts/string-utils": "^1.0.3",
     "@rbxts/timer": "^0.0.9"

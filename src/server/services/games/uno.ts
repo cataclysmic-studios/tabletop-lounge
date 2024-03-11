@@ -5,6 +5,7 @@ import { Assets, shuffle, slice } from "shared/utilities/helpers";
 import { UnoCard, UnoSuit } from "shared/structs/uno";
 import Game from "shared/structs/game";
 import BaseGame from "./base-game";
+import Log from "shared/logger";
 
 const HAND_SIZE = 7;
 const COLORED_CARDS = 2;
@@ -13,12 +14,27 @@ const DRAW_FOUR_CARDS = 4;
 
 export default class Uno extends BaseGame {
   private deck: UnionOperation[] = [];
+  private turnIndex = 0;
   private readonly hands: Record<number, UnionOperation[]> = {}
 
   protected start(): void {
     this.createDeck();
     this.createHands()
     this.addDeckToTable();
+    this.turnChanged();
+
+    Events.gameTable.advanceTurn.connect((_, tableID) => {
+      if (tableID !== this.gameTable.id) return;
+      this.turnIndex += 1;
+      this.turnIndex %= this.gameTable.getSatPlayers().size();
+      this.turnChanged();
+    });
+  }
+
+  private turnChanged(): void {
+    const turn = this.gameTable.getSatPlayers()[this.turnIndex];
+    Events.gameTable.turnChanged.broadcast(this.gameTable.id, turn);
+    Log.info(`It is now ${turn.Name}'s turn`);
   }
 
   private addDeckToTable(): void {

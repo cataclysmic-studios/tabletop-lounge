@@ -10,6 +10,9 @@ interface ServerEvents {
     set(key: DataKey, value: DataValue): void;
     increment(key: ExtractKeys<GameDataModel, number>, amount?: number): void;
   };
+  gameTable: {
+    advanceTurn(tableID: string): void;
+  };
 }
 
 interface ClientEvents {
@@ -20,6 +23,7 @@ interface ClientEvents {
     toggleCamera(tableID: string, on: boolean): void;
     ejectOccupant(tableID: string): void;
     addCardHand(tableID: string, hand: CardType[], gameName: CardGame): void;
+    turnChanged(tableID: string, turn: Player): void;
   };
 }
 
