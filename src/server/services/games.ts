@@ -4,7 +4,7 @@ import { ServerScriptService } from "@rbxts/services";
 import { Exception } from "shared/exceptions";
 import type { LogStart } from "shared/hooks";
 import type { ServerBaseGameTable } from "server/base-components/base-game-table";
-import type BaseGame from "server/classes/base-game";
+import type BaseGame from "server/classes/base-games/base-game";
 
 type GameModule = { default: typeof BaseGame };
 type GameCtor = new (gameTable: ServerBaseGameTable<{}, GameTableModel>) => BaseGame;

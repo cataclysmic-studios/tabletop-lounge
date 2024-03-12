@@ -73,7 +73,7 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: CardGame }> imple
     }
   }
 
-  private addCardInteraction(card: CardType, cardModel: UnionOperation, cframe: CFrame): void {
+  private addCardInteraction(card: CardType, cardModel: BasePart, cframe: CFrame): void {
     const clickDetector = new Instance("ClickDetector", cardModel);
     const selectionBox = this.createSelectionBox(cardModel);
 
@@ -91,7 +91,7 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: CardGame }> imple
     });
   }
 
-  private playCard(card: CardType, cardModel: UnionOperation) {
+  private playCard(card: CardType, cardModel: BasePart) {
     Log.info("Chose card:", card);
     const cframe = cardModel.CFrame;
     cardModel.Destroy();
@@ -99,7 +99,7 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: CardGame }> imple
     Events.games.cards.play(this.getID(), card, cframe);
   }
 
-  private createSelectionBox(cardModel: UnionOperation) {
+  private createSelectionBox(cardModel: BasePart) {
     const selectionBox = new Instance("SelectionBox", cardModel);
     selectionBox.LineThickness = 0.01;
     selectionBox.Transparency = 1;

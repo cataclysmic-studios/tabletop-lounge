@@ -1,28 +1,23 @@
 import { Assets } from "./helpers";
-import { type UnoCard, UnoSuit } from "shared/structs/uno";
-import type { GoFishCard } from "shared/structs/go-fish";
+import { UnoSuit } from "shared/structs/uno";
 import type { CardGame } from "shared/structs/game-types";
 import Game from "shared/structs/game";
+import GameToCardType from "shared/structs/game-to-card";
 import type CardType from "shared/structs/card-type";
 
-interface GameToCardType {
-  [Game.Uno]: UnoCard;
-  [Game.GoFish]: GoFishCard;
-}
-
-export function getCardModel(card: CardType): UnionOperation {
+export function getCardModel(card: CardType): BasePart {
   const cardModels = <Folder>Assets.Games.FindFirstChild(card.game)?.FindFirstChild("Cards");
   switch(card.game) {
     case Game.Uno: {
       const modelFolder = card.suit === UnoSuit.None ? cardModels : cardModels.FindFirstChild(card.suit);
-      return <UnionOperation>modelFolder?.FindFirstChild(card.name);
+      return <BasePart>modelFolder?.FindFirstChild(card.name);
     }
     case Game.GoFish:
-      return <UnionOperation>cardModels.FindFirstChild(card.name);
+      return <BasePart>cardModels.FindFirstChild(card.name);
   }
 }
 
-export function getCardObject<CardGameType extends CardGame = CardGame, Card extends GameToCardType[CardGameType] = GameToCardType[CardGameType]>(cardGame: CardGameType, cardModel: UnionOperation): Card {
+export function getCardObject<CardGameType extends CardGame = CardGame, Card extends GameToCardType[CardGameType] = GameToCardType[CardGameType]>(cardGame: CardGameType, cardModel: BasePart): Card {
   switch(cardGame) {
     case Game.Uno: {
       const suitKey = <Maybe<keyof typeof UnoSuit>>cardModel.GetAttribute("Suit");
