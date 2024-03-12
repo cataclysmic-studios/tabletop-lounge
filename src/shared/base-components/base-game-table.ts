@@ -24,20 +24,8 @@ export abstract class BaseGameTable<A extends {} = {}, I extends GameTableModel 
   }
 
   protected onStart(): void {
-    for (const seat of this.getSeats()) {
-      const id = HTTP.GenerateGUID();
-      const janitor = new Janitor;
-      this.seatJanitors[id] = janitor;
-      seat.SetAttribute("ID", id);
-
-      janitor.Add(seat.GetPropertyChangedSignal("Occupant").Connect(() =>
-      this[this.getSeatOccupantPlayer(seat) !== undefined ? "seatOccupied" : "seatLeft"](seat)
-      ));
-      this.janitor.Add(janitor);
-    }
-
-    for (const [name, value] of Object.entries(<Map<keyof (Attributes & A), AttributeValue>>this.instance.GetAttributes()))
-      this.attributes[name] = <never>value;
+    this.createSeatJanitors();
+    this.fixAttributes();
   }
 
   protected getID(): string {
@@ -65,5 +53,24 @@ export abstract class BaseGameTable<A extends {} = {}, I extends GameTableModel 
 
   protected getSeats(): Seat[] {
     return (<(Model & { Seat: Seat; })[]>this.instance.Chairs.GetChildren()).map(chair => chair.Seat)
+  }
+
+  private createSeatJanitors(): void {
+    for (const seat of this.getSeats()) {
+      const id = HTTP.GenerateGUID();
+      const janitor = new Janitor;
+      this.seatJanitors[id] = janitor;
+      seat.SetAttribute("ID", id);
+
+      janitor.Add(seat.GetPropertyChangedSignal("Occupant").Connect(() =>
+        this[this.getSeatOccupantPlayer(seat) !== undefined ? "seatOccupied" : "seatLeft"](seat)
+      ));
+      this.janitor.Add(janitor);
+    }
+  }
+
+  private fixAttributes(): void {
+    for (const [name, value] of Object.entries(<Map<keyof (Attributes & A), AttributeValue>>this.instance.GetAttributes()))
+      this.attributes[name] = <never>value;
   }
 }

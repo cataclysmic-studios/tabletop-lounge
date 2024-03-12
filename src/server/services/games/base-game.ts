@@ -1,12 +1,13 @@
 import { Janitor } from "@rbxts/janitor";
-import { GameTable } from "server/components/game-table";
+
+import type { ServerBaseGameTable } from "server/base-components/base-game-table";
 
 export default abstract class BaseGame {
   protected readonly janitor = new Janitor;
   protected readonly tableTop: MeshPart;
 
   public constructor(
-    protected readonly gameTable: GameTable
+    protected readonly gameTable: ServerBaseGameTable
   ) {
 
     this.tableTop = this.gameTable.instance.Table.Top;

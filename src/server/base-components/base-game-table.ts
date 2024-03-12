@@ -1,29 +1,23 @@
-import type { OnStart } from "@flamework/core";
-import { Component } from "@flamework/components";
 import { RunService as Runtime, HttpService as HTTP } from "@rbxts/services";
+import { Janitor } from "@rbxts/janitor";
 import { Timer } from "@rbxts/timer";
 
 import { Events } from "server/network";
 import { Assets, toRemainingTime } from "shared/utilities/helpers";
-import { BaseGameTable } from "shared/base-components/base-game-table";
 import Log from "shared/logger";
 
-import type { LogStart } from "shared/hooks";
-import type { GamesService } from "server/services/games";
+import { BaseGameTable } from "shared/base-components/base-game-table";
+import { GamesService } from "server/services/games";
+import { Dependency } from "@flamework/core";
 
 const COUNTDOWN_LENTH = Runtime.IsStudio() ? 3 : 20;
-@Component({
-  tag: "GameTable",
-})
-export class GameTable extends BaseGameTable implements OnStart, LogStart {
+
+export abstract class ServerBaseGameTable<A extends {} = {}, I extends GameTableModel = GameTableModel> extends BaseGameTable<A, I> {
   public readonly id = HTTP.GenerateGUID();
+  protected readonly seatJanitors: Record<string, Janitor> = {};
   private readonly timerUI = Assets.UI.GameTimer.Clone();
 
-  public constructor(
-    private readonly games: GamesService
-  ) { super(); }
-
-  public onStart(): void {
+  protected onStart(): void {
     super.onStart();
     this.timerUI.CFrame = this.instance.GameIcon.CFrame.sub(new Vector3(0, 2, 0));
     this.timerUI.Countdown.Enabled = false;
@@ -63,11 +57,14 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
   private startGame(): void {
     Log.info(`Started game of "${this.attributes.Game}"`);
     Events.games.toggleCamera.broadcast(this.id, true);
-    this.games.start(this);
     this.toggleSeats(false);
+
+    const games = Dependency<GamesService>();
+    games.start(this);
   }
 
   public concludeGame(): void {
+    Log.info(`Concluded game of "${this.attributes.Game}"`);
     Events.games.toggleCamera.broadcast(this.attributes.Game, false);
     this.toggleSeats(true);
     this.ejectSeatOccupants();
