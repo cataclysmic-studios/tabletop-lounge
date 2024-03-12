@@ -1,5 +1,6 @@
 const enum Game {
-  Uno = "Uno"
+  Uno = "Uno",
+  GoFish = "GoFish"
 }
 
 export default Game;

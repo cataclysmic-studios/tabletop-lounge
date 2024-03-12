@@ -62,18 +62,18 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
 
   private startGame(): void {
     Log.info(`Started game of "${this.attributes.Game}"`);
-    Events.gameTable.toggleCamera.broadcast(this.id, true);
+    Events.games.toggleCamera.broadcast(this.id, true);
     this.games.start(this);
     this.toggleSeats(false);
   }
 
   public concludeGame(): void {
-    Events.gameTable.toggleCamera.broadcast(this.attributes.Game, false);
+    Events.games.toggleCamera.broadcast(this.attributes.Game, false);
     this.toggleSeats(true);
     this.ejectSeatOccupants();
   }
 
   private ejectSeatOccupants(): void {
-    Events.gameTable.ejectOccupant.broadcast(this.id);
+    Events.games.ejectOccupant.broadcast(this.id);
   }
 }

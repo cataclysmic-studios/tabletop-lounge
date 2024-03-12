@@ -8,16 +8,16 @@ const DISABLED: Partial<Record<LogFunctionName, boolean>> = {
 
 };
 
-const log = (category: LogFunctionName, message: string): void => {
+const log = (category: LogFunctionName, ...messages: unknown[]): void => {
   if (DISABLED[category]) return;
-  print(`[${category.upper()}]: ${message}`);
+  print(`[${category.upper()}]:`, ...messages);
 }
 
 const getName = (obj: object) => (<string>Reflect.getMetadata(obj, "identifier")).split("@")[1];
 
 namespace Log {
-  export function info(message: string): void {
-    log("info", message);
+  export function info(...messages: unknown[]): void {
+    log("info", ...messages);
   }
 
   export function warning(message: string): void {

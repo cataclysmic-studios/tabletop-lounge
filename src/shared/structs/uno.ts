@@ -1,3 +1,6 @@
+import BaseCard from "./base-card";
+import type Game from "./game";
+
 export enum UnoSuit {
   Red = "Red",
   Green = "Green",
@@ -6,7 +9,7 @@ export enum UnoSuit {
   None = "None"
 }
 
-export interface UnoCard {
+export interface UnoCard extends BaseCard {
   suit: UnoSuit;
-  name: string;
+  game: Game.Uno;
 }

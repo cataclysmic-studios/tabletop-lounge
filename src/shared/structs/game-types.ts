@@ -1,4 +1,5 @@
 import type Game from "./game";
 
 export type CardGame =
-  | Game.Uno;
+  | Game.Uno
+  | Game.GoFish;

@@ -15,6 +15,7 @@ import type { GameCamera } from "./game-camera";
 import type Game from "shared/structs/game";
 import type CardType from "shared/structs/card-type";
 import Log from "shared/logger";
+import { getCardModel, getCardObject } from "shared/utilities/game";
 
 const { pi, sin, cos, floor } = math;
 
@@ -29,6 +30,7 @@ function arrayToEvenField(array: defined[]): number[] {
   return array.map((_, i) => i - middleIndex <= 0 ? -middleIndex + i : middleIndex - (array.size() - 1 - i));
 }
 
+// TODO: add all functions just related to a game table in BaseGameTable, then make this a CardGameTable
 @Component({ tag: "GameTable" })
 export class GameTable extends BaseGameTable implements OnStart, LogStart {
   protected readonly gameCameras: Record<string, GameCamera> = {};
@@ -41,21 +43,21 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
   public onStart(): void {
     super.onStart();
 
-    this.janitor.Add(Events.gameTable.turnChanged.connect((tableID, turn) => {
+    this.janitor.Add(Events.games.turnChanged.connect((tableID, turn) => {
       if (this.getID() !== tableID) return;
       this.turn = turn;
     }))
-    this.janitor.Add(Events.gameTable.addCardHand.connect((tableID, hand, gameName) => {
+    this.janitor.Add(Events.games.cards.addHand.connect((tableID, hand) => {
       if (this.getID() !== tableID) return;
-      this.addCardHand(gameName, hand);
+      this.addCardHand(hand);
     }));
-    this.janitor.Add(Events.gameTable.ejectOccupant.connect(tableID => {
+    this.janitor.Add(Events.games.ejectOccupant.connect(tableID => {
       if (this.getID() !== tableID) return;
       const humanoid = Character.FindFirstChildOfClass("Humanoid")!;
       humanoid.JumpPower = 50;
       humanoid.Jump = true;
     }));
-    this.janitor.Add(Events.gameTable.toggleCamera.connect((tableID, on) => {
+    this.janitor.Add(Events.games.toggleCamera.connect((tableID, on) => {
       if (this.getID() !== tableID) return;
 
       const seat = this.getSeats().find(seat => this.getSeatOccupantPlayer(seat) === Player);
@@ -67,8 +69,7 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
       this.gameCameras[this.geatSeatID(seat)] = this.janitor.Add(this.components.addComponent<GameCamera>(new Instance("Camera", seat)), "destroy");
   }
 
-  private addCardHand(gameName: Game, hand: CardType[]) {
-    const allCardModels = <Folder>Assets.Games[gameName].FindFirstChild("Cards");
+  private addCardHand(hand: CardType[]) {
     const seat = this.getSeats().find(seat => this.getSeatOccupantPlayer(seat) === Player)!;
     const handPosition = new Vector3(seat.Position.X, this.instance.Table.Top.Position.Y, seat.Position.Z)
       .add(seat.CFrame.LookVector.mul(CARD_DISTANCE));
@@ -77,7 +78,7 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
     const angleIncrement = pi / hand.size();
 
     for (const card of hand) {
-      const cardModel = <UnionOperation>(card.suit === UnoSuit.None ? allCardModels.FindFirstChild(card.name) : allCardModels.FindFirstChild(card.suit)?.FindFirstChild(card.name))?.Clone();
+      const cardModel = getCardModel(card).Clone();
       const i = hand.indexOf(card);
       const angle = angleIncrement * (i + 0.5);
       const cframe = handCFrame
@@ -102,11 +103,11 @@ export class GameTable extends BaseGameTable implements OnStart, LogStart {
 
       clickDetector.MouseClick.Connect(() => {
         if (this.turn !== Player) return;
-        Log.info("Chose card");
-        Events.gameTable.advanceTurn(this.getID());
-        // put card down
-        // Events.gameTable.uno.chooseCard()
-        // Events.gameTable.uno.drawCard()
+        Log.info("Chose card:", card);
+        const cframe = cardModel.CFrame;
+        cardModel.Destroy();
+        Events.games.advanceTurn(this.getID()); // TODO: if necessary, narrow down to only call this if the game is turn based
+        Events.games.cards.play(this.getID(), card, cframe);
       });
       clickDetector.MouseHoverEnter.Connect(() => {
         tween(selectionBox, CARD_HOVER_INFO, { Transparency: selectionBoxTrans });
