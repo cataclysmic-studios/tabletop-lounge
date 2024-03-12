@@ -90,7 +90,7 @@ export default abstract class CardGame extends BaseGame {
     this.lastCardPlayed = cardModel;
   }
 
-  protected copy(card: BasePart, times: number): void {
+  protected addToDeck(card: BasePart, times: number): void {
     for (let i = 0; i < times; i++) {
       const clone = this.janitor.Add(card.Clone());
       if (card.Parent?.Name !== "Cards")

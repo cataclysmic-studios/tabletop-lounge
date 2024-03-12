@@ -25,9 +25,9 @@ export default class Uno extends CardGame {
     const suits = [cards.Red, cards.Green, cards.Yellow, cards.Blue].map(suit => <Part[]>suit.GetChildren());
     for (const suit of suits)
       for (const card of suit)
-        this.copy(card, COLORED_CARDS);
+        this.addToDeck(card, COLORED_CARDS);
 
-    this.copy(cards.Wildcard, WILDCARDS);
-    this.copy(cards.DrawFour, DRAW_FOUR_CARDS);
+    this.addToDeck(cards.Wildcard, WILDCARDS);
+    this.addToDeck(cards.DrawFour, DRAW_FOUR_CARDS);
   }
 }
