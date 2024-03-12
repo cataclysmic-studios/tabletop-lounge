@@ -5,6 +5,23 @@ import Game from "shared/structs/game";
 import GameToCardType from "shared/structs/game-to-card";
 import type CardType from "shared/structs/card-type";
 
+interface GameInfo {
+  readonly turnBased: boolean;
+}
+
+export function getGameInfo(game: Game): GameInfo {
+  switch(game) {
+    case Game.Uno:
+      return {
+        turnBased: true
+      }
+    case Game.GoFish:
+      return {
+        turnBased: true
+      }
+  }
+}
+
 export function getCardModel(card: CardType): BasePart {
   const cardModels = <Folder>Assets.Games.FindFirstChild(card.game)?.FindFirstChild("Cards");
   switch(card.game) {

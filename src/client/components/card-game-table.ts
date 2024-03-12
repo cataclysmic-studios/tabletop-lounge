@@ -5,7 +5,7 @@ import { TweenInfoBuilder } from "@rbxts/builders";
 
 import { Events } from "client/network";
 import { Player } from "shared/utilities/client";
-import { getCardModel, getCardObject } from "shared/utilities/game";
+import { getCardModel, getCardObject, getGameInfo } from "shared/utilities/game";
 import { tween } from "shared/utilities/ui";
 import Log from "shared/logger";
 
@@ -74,11 +74,12 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: CardGame }> imple
   }
 
   private addCardInteraction(card: CardType, cardModel: BasePart, cframe: CFrame): void {
+    const { turnBased } = getGameInfo(card.game);
     const clickDetector = new Instance("ClickDetector", cardModel);
     const selectionBox = this.createSelectionBox(cardModel);
 
     clickDetector.MouseClick.Connect(() => {
-      if (this.turn !== Player) return;
+      if (turnBased && this.turn !== Player) return;
       this.playCard(card, cardModel);
     });
     clickDetector.MouseHoverEnter.Connect(() => {
