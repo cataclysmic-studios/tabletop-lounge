@@ -6,7 +6,7 @@ import { Exception } from "shared/exceptions";
 import { Assets, shuffle, slice } from "shared/utilities/helpers";
 import { getCardModel, getCardObject } from "shared/utilities/game";
 import { tween } from "shared/utilities/ui";
-import BaseGame from "./base-game";
+import BaseGame from "../base-game";
 import Game from "shared/structs/game";
 import Log from "shared/logger";
 import type CardType from "shared/structs/card-type";
@@ -18,6 +18,7 @@ const DRAW_FOUR_CARDS = 4;
 const CARD_PILE_DISTANCE = 1; // distance between the pile of cards to draw and cards already played
 
 export default class Uno extends BaseGame {
+  public static readonly name = Game.Uno;
   private readonly hands: Record<number, UnionOperation[]> = {}
   private deck: UnionOperation[] = [];
   private turnIndex = 0;

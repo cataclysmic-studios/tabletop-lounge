@@ -1,8 +1,11 @@
 import { Janitor } from "@rbxts/janitor";
 
 import type { ServerBaseGameTable } from "server/base-components/base-game-table";
+import type Game from "shared/structs/game";
 
 export default abstract class BaseGame {
+  public static readonly name: Game;
+
   protected readonly janitor = new Janitor;
   protected readonly tableTop: MeshPart;
 
