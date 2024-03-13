@@ -44,13 +44,8 @@ interface ServerFunctions {
       canPlayCard(tableID: string, card: CardType): boolean;
     };
   };
-  external: {
-    github: {
-      getInfo(): GitHubInfo;
-    };
-    analytics: {
-
-    }
+  github: {
+    getInfo(): GitHubInfo;
   };
 }
 

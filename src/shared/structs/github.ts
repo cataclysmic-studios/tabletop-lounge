@@ -3,7 +3,16 @@ export interface GitHubTag {
 }
 
 export interface GitHubCommit {
-  readonly sha: string;
+  readonly message: string;
+  readonly url: string;
+  readonly committer: {
+    readonly date: string;
+    readonly email: string;
+    readonly name: string;
+  }
+  readonly tree: {
+    readonly sha: string;
+  };
 }
 
 export interface GitHubCommitResponse {

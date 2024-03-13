@@ -22,7 +22,7 @@ export class VersionLabel extends BaseComponent<{}, TextLabel> implements OnStar
   }
 
   private async update(): Promise<void> {
-    const { tags: [tag], commits: [commit] } = await Functions.external.github.getInfo();
-    this.instance.Text = `${tag.name} (${slice(commit.sha, 0, 7)})`;
+    const { tags: [tag], commits: [commit] } = await Functions.github.getInfo();
+    this.instance.Text = `${tag.name} (${slice(commit.tree.sha, 0, 7)})`;
   }
 }

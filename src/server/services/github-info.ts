@@ -7,14 +7,28 @@ import type { GitHubCommitResponse, GitHubInfo, GitHubTag } from "shared/structs
 
 @Service()
 export class GitHubInfoService implements OnInit, LogStart {
+  private readonly baseURL = "https://api.github.com/repos/R-unic/tabletop-lounge";
+
   public onInit(): void {
-    Functions.external.github.getInfo.setCallback(() => this.retrieve());
+    const repeatTryGet = (): GitHubInfo => {
+      const [success, info] = pcall(() => this.retrieve());
+      if (!success) {
+        task.wait();
+        return repeatTryGet();
+      }
+      return info;
+    };
+
+    Functions.github.getInfo.setCallback(repeatTryGet);
   }
 
   public retrieve(): GitHubInfo {
-    const endpoint = "https://api.github.com/repos/R-unic/tabletop-lounge/tags";
-    const tags = <GitHubTag[]>HTTP.JSONDecode(HTTP.GetAsync(endpoint, true));
-    const commits = (<GitHubCommitResponse[]>HTTP.JSONDecode(HTTP.GetAsync(endpoint, true))).map(res => res.commit);
+    const tags = this.request<GitHubTag[]>("tags");
+    const commits = this.request<GitHubCommitResponse[]>("commits").map(res => res.commit);
     return { tags, commits };
+  }
+
+  private request<T>(path: string): T {
+    return <T>HTTP.JSONDecode(HTTP.GetAsync(`${this.baseURL}/${path}`, true));
   }
 }
