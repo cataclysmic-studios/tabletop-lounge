@@ -11,11 +11,12 @@ export interface GitHubCommit {
     readonly name: string;
   }
   readonly tree: {
-    readonly sha: string;
+    sha: string;
   };
 }
 
 export interface GitHubCommitResponse {
+  readonly sha: string;
   readonly commit: GitHubCommit;
 }
 

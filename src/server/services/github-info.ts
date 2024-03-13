@@ -24,7 +24,10 @@ export class GitHubInfoService implements OnInit, LogStart {
 
   public retrieve(): GitHubInfo {
     const tags = this.request<GitHubTag[]>("tags");
-    const commits = this.request<GitHubCommitResponse[]>("commits").map(res => res.commit);
+    const commits = this.request<GitHubCommitResponse[]>("commits").map(res => {
+      res.commit.tree.sha = res.sha;
+      return res.commit;
+    });
     return { tags, commits };
   }
 
