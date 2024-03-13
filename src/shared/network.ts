@@ -1,7 +1,8 @@
 import { Networking } from "@flamework/networking";
-import { DataKey, DataValue, GameDataModel } from "./data-models/generic";
+import type { DataKey, DataValue, GameDataModel } from "./data-models/generic";
 import type { GitHubInfo } from "./structs/github";
 import type CardType from "./structs/cards/card-type";
+import type Game from "./structs/game";
 
 interface ServerEvents {
   data: {
@@ -31,6 +32,8 @@ interface ClientEvents {
       addHand(tableID: string, hand: CardType[]): void;
       addToHand(tableID: string, card: CardType): void;
       draw(tableID: string, card: CardType): void;
+      toggleDrawButton(_game: Game, on: boolean): void;
+      toggleGameUI(_game: Game, on: boolean): void;
     };
   };
 }

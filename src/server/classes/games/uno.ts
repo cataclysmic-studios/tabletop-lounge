@@ -5,6 +5,7 @@ import CardGame from "../base-games/card-game";
 import Game from "shared/structs/game";
 import Turns from "../turns";
 import type CardType from "shared/structs/cards/card-type";
+import { Events } from "server/network";
 
 const COLORED_CARDS = 2;
 const WILDCARDS = 4;
@@ -28,6 +29,7 @@ export default class Uno extends CardGame<Game.Uno> {
     this.turns.start();
     task.delay(0.5, () => this.placeFirstCard());
     this.janitor.Add(this.cardPlayed.Connect(card => this.currentSuit = card.suit));
+    Events.games.cards.toggleGameUI.fire(this._table.getSatPlayers(), Game.Uno, true);
   }
 
   protected canPlayCard(player: Player, card: UnoCard): boolean {
@@ -51,6 +53,7 @@ export default class Uno extends CardGame<Game.Uno> {
       }
     }
 
+    // TODO: if we cannot play the card, enable the draw card button
     // if it's a card without a suit, e.x. wildcard, you can play any card on it
     return canPlayCard;
   }

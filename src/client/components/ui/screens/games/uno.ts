@@ -17,7 +17,12 @@ export class UnoUI extends DestroyableComponent<{}, PlayerGui["Games"]["Uno"]> i
   ) { super(); }
 
   public onStart(): void {
-    // TODO: visibility of the draw button
+    this.instance.Draw.Visible = false;
+    this.janitor.Add(Events.games.cards.toggleDrawButton.connect((_game, on) => {
+      if (_game !== this.instance.Name) return;
+      this.instance.Draw.Visible = on
+    }));
+
     const gameTables = this.components.getAllComponents<CardGameTable>();
     this.janitor.Add(this.instance.Draw.MouseButton1Click.Connect(() => {
       const currentGameTable = gameTables.find(_table => {
