@@ -31,6 +31,8 @@ function arrayToEvenField(array: defined[]): number[] {
 
 @Component({ tag: "CardGameTable" })
 export class CardGameTable extends ClientBaseGameTable<{ Game: GameType.CardGame }> implements OnStart, LogStart {
+  private lastHand: CardType[] = [];
+
   public onStart(): void {
     super.onStart();
 
@@ -38,9 +40,28 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: GameType.CardGame
       if (this.getID() !== tableID) return;
       this.addCardHand(hand);
     }));
+    this.janitor.Add(Events.games.cards.draw.connect((tableID, card) => {
+      if (this.getID() !== tableID) return;
+      this.updateHand(() => this.lastHand.push(card));
+    }));
   }
 
-  private addCardHand(hand: CardType[]) {
+  private playCard(card: CardType, cardModel: BasePart) {
+    Log.info("Chose card:", card);
+    const cframe = cardModel.CFrame;
+    cardModel.Destroy();
+    Events.games.advanceTurn(this.getID()); // TODO: if necessary, narrow down to only call this if the game is turn based
+    Events.games.cards.play(this.getID(), card, cframe);
+    this.updateHand(() => this.lastHand.remove(this.lastHand.indexOf(card)));
+  }
+
+  private updateHand(modifyHand: () => void): void {
+    World.GameProps.Cards.Uno.Hand.ClearAllChildren();
+    modifyHand();
+    this.addCardHand(this.lastHand);
+  }
+
+  private addCardHand(hand: CardType[]): void {
     const seat = this.getSeats().find(seat => this.getSeatOccupantPlayer(seat) === Player)!;
     const radius = CARD_HAND_WIDTH / 2;
     const angleIncrement = pi / hand.size();
@@ -51,7 +72,6 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: GameType.CardGame
       .mul(this.instance.Table.Top.CFrame.Rotation)
       .mul(CFrame.Angles(0, 0, math.rad(180)));
 
-    // TODO: fix rotation
     for (const card of hand) {
       const cardModel = getCardModel(card).Clone();
       const i = hand.indexOf(card);
@@ -63,9 +83,10 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: GameType.CardGame
 
       cardModel.CFrame = cframe;
       cardModel.Orientation = cardModel.Orientation.add(this.instance.Table.Top.Orientation).add(new Vector3(0, -90, -90));
-      cardModel.Parent = World.GameProps.Cards.Uno.Hands;
+      cardModel.Parent = World.GameProps.Cards.Uno.Hand;
       this.addCardInteraction(card, cardModel, cframe);
     }
+    this.lastHand = hand;
   }
 
   private addCardInteraction(card: CardType, cardModel: BasePart, cframe: CFrame): void {
@@ -73,7 +94,6 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: GameType.CardGame
     const selectionBox = this.createSelectionBox(cardModel);
 
     clickDetector.MouseClick.Connect(async () => {
-      // TODO: fix
       if (!await Functions.games.cards.canPlayCard(this.getID(), card)) return;
       this.playCard(card, cardModel);
     });
@@ -87,15 +107,7 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: GameType.CardGame
     });
   }
 
-  private playCard(card: CardType, cardModel: BasePart) {
-    Log.info("Chose card:", card);
-    const cframe = cardModel.CFrame;
-    cardModel.Destroy();
-    Events.games.advanceTurn(this.getID()); // TODO: if necessary, narrow down to only call this if the game is turn based
-    Events.games.cards.play(this.getID(), card, cframe);
-  }
-
-  private createSelectionBox(cardModel: BasePart) {
+  private createSelectionBox(cardModel: BasePart): SelectionBox {
     const selectionBox = new Instance("SelectionBox", cardModel);
     selectionBox.LineThickness = 0.01;
     selectionBox.Transparency = 1;

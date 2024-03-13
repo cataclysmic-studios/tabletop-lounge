@@ -49,6 +49,10 @@ export default abstract class CardGame<G extends GameType.CardGame> extends Base
 
       return this.canPlayCard(player, card);
     });
+    this.janitor.Add(Events.games.cards.draw.connect((player, tableID) => {
+      if (tableID !== this._table.id) return;
+      this.drawCard(player);
+    }));
     this.janitor.Add(Events.games.cards.play.connect((player, tableID, card, cframe) => {
       if (tableID !== this._table.id) return;
       if (card.game !== this._table.attributes.Game)
@@ -83,6 +87,12 @@ export default abstract class CardGame<G extends GameType.CardGame> extends Base
       card.Parent = World.GameProps.Cards.Uno.Table;
       lastCard = card;
     }
+  }
+
+  protected drawCard(player: Player): void {
+    const cardModel = this.deck.pop()!;
+    const card = getCardObject<G>(<G>this._table.attributes.Game, cardModel);
+    Events.games.cards.draw(player, this._table.id, card);
   }
 
   protected playCard(card: GameToCard[G], cframe: CFrame) {

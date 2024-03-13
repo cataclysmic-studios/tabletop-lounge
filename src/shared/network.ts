@@ -13,6 +13,7 @@ interface ServerEvents {
     advanceTurn(tableID: string): void;
     cards: {
       play(tableID: string, card: CardType, cframe: CFrame): void;
+      draw(tableID: string): void;
     };
   };
 }
@@ -27,6 +28,8 @@ interface ClientEvents {
     turnChanged(tableID: string, turn: Player): void;
     cards: {
       addHand(tableID: string, hand: CardType[]): void;
+      addToHand(tableID: string, card: CardType): void;
+      draw(tableID: string, card: CardType): void;
     };
   };
 }

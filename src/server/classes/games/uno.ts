@@ -12,6 +12,7 @@ const DRAW_FOUR_CARDS = 4;
 const CARD_PILE_DISTANCE = 1; // distance between the pile of cards to draw and cards already played
 const STACKING_ALLOWED = false; // standard uno
 
+// TODO: track score
 export default class Uno extends CardGame<Game.Uno> {
   public static readonly name = Game.Uno;
 

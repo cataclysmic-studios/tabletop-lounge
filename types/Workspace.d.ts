@@ -2,7 +2,7 @@ interface Workspace extends WorldModel {
   GameProps: Folder & {
     Cards: Folder & {
       Uno: Folder & {
-        Hands: Folder;
+        Hand: Folder;
         Table: Folder & {
           Played: Folder;
         };
