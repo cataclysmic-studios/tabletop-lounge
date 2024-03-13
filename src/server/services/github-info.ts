@@ -13,8 +13,8 @@ export class GitHubInfoService implements OnInit, LogStart {
 
   public retrieve(): GitHubInfo {
     const endpoint = "https://api.github.com/repos/R-unic/tabletop-lounge/tags";
-    const tags = <GitHubTag[]>HTTP.JSONDecode(HTTP.GetAsync(endpoint));
-    const commits = (<GitHubCommitResponse[]>HTTP.JSONDecode(HTTP.GetAsync(endpoint))).map(res => res.commit);
+    const tags = <GitHubTag[]>HTTP.JSONDecode(HTTP.GetAsync(endpoint, true));
+    const commits = (<GitHubCommitResponse[]>HTTP.JSONDecode(HTTP.GetAsync(endpoint, true))).map(res => res.commit);
     return { tags, commits };
   }
 }
