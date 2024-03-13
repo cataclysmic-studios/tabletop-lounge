@@ -1,17 +1,27 @@
 import type { OnStart } from "@flamework/core";
 import { Component, BaseComponent } from "@flamework/components";
-
-import type { LogStart } from "shared/hooks";
-import { PlayerGui } from "shared/utilities/client";
 import { slice } from "@rbxts/string-utils";
+
 import { Functions } from "client/network";
+import { PlayerGui } from "shared/utilities/client";
+import type { LogStart } from "shared/hooks";
+
+const REFRESH_RATE = 180; //seconds (3 mins)
 
 @Component({
   tag: "VersionLabel",
   ancestorWhitelist: [ PlayerGui ]
 })
 export class VersionLabel extends BaseComponent<{}, TextLabel> implements OnStart, LogStart {
-  public async onStart(): Promise<void> {
+  public onStart(): void {
+    task.spawn(() => {
+      do
+        this.update()
+      while (task.wait(REFRESH_RATE));
+    });
+  }
+
+  private async update(): Promise<void> {
     const { tags: [tag], commits: [commit] } = await Functions.external.github.getInfo();
     this.instance.Text = `${tag.name} (${slice(commit.sha, 0, 7)})`;
   }
