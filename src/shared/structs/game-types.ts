@@ -1,5 +1,9 @@
 import type Game from "./game";
 
-export type CardGame =
-  | Game.Uno
-  | Game.GoFish;
+namespace GameType {
+  export type CardGame =
+    | Game.Uno
+    | Game.GoFish;
+}
+
+export default GameType;

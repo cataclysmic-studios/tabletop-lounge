@@ -8,6 +8,7 @@ const { floor, log, abs, max, min } = math;
 
 export const Assets = ReplicatedFirst.Assets;
 
+export const isNaN = (n: number) => n !== n;
 export const toStorableVector3 = ({ X, Y, Z }: Vector3) => ({ x: X, y: Y, z: Z });
 export const toUsableVector3 = ({ x, y, z }: StorableVector3) => new Vector3(x, y, z);
 export function toRegion3({ CFrame, Size }: Part, areaShrink = 0): Region3 {

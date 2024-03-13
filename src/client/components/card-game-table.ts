@@ -3,15 +3,15 @@ import { Component } from "@flamework/components";
 import { Workspace as World } from "@rbxts/services";
 import { TweenInfoBuilder } from "@rbxts/builders";
 
-import { Events } from "client/network";
+import { Events, Functions } from "client/network";
 import { Player } from "shared/utilities/client";
-import { getCardModel, getCardObject, getGameInfo } from "shared/utilities/game";
+import { getCardModel } from "shared/utilities/game";
 import { tween } from "shared/utilities/ui";
 import Log from "shared/logger";
 
 import type { LogStart } from "shared/hooks";
-import type { CardGame } from "shared/structs/game-types";
-import type CardType from "shared/structs/card-type";
+import type GameType from "shared/structs/game-types";
+import type CardType from "shared/structs/cards/card-type";
 
 import { ClientBaseGameTable } from "client/base-components/base-game-table";
 
@@ -30,16 +30,10 @@ function arrayToEvenField(array: defined[]): number[] {
 }
 
 @Component({ tag: "CardGameTable" })
-export class CardGameTable extends ClientBaseGameTable<{ Game: CardGame }> implements OnStart, LogStart {
-  private turn?: Player;
-
+export class CardGameTable extends ClientBaseGameTable<{ Game: GameType.CardGame }> implements OnStart, LogStart {
   public onStart(): void {
     super.onStart();
 
-    this.janitor.Add(Events.games.turnChanged.connect((tableID, turn) => {
-      if (this.getID() !== tableID) return;
-      this.turn = turn;
-    }))
     this.janitor.Add(Events.games.cards.addHand.connect((tableID, hand) => {
       if (this.getID() !== tableID) return;
       this.addCardHand(hand);
@@ -48,38 +42,39 @@ export class CardGameTable extends ClientBaseGameTable<{ Game: CardGame }> imple
 
   private addCardHand(hand: CardType[]) {
     const seat = this.getSeats().find(seat => this.getSeatOccupantPlayer(seat) === Player)!;
-    const handPosition = new Vector3(seat.Position.X, this.instance.Table.Top.Position.Y, seat.Position.Z)
-      .add(seat.CFrame.LookVector.mul(CARD_DISTANCE));
-    const handCFrame = CFrame.lookAlong(handPosition, seat.CFrame.RightVector);
     const radius = CARD_HAND_WIDTH / 2;
     const angleIncrement = pi / hand.size();
 
+    const handPosition = new Vector3(seat.Position.X, this.instance.Table.Top.Position.Y, seat.Position.Z)
+      .add(seat.CFrame.LookVector.mul(CARD_DISTANCE));
+    const handCFrame = new CFrame(handPosition)
+      .mul(this.instance.Table.Top.CFrame.Rotation)
+      .mul(CFrame.Angles(0, 0, math.rad(180)));
+
+    // TODO: fix rotation
     for (const card of hand) {
       const cardModel = getCardModel(card).Clone();
       const i = hand.indexOf(card);
       const angle = angleIncrement * (i + 0.5);
       const cframe = handCFrame
         .add(seat.CFrame.LookVector.mul(radius / 12 * sin(angle)))
-        .add(new Vector3(
-          0,
-          (this.instance.Table.Top.Size.Y / 2) + ((hand.size() - i) * cardModel.Size.X),
-          (radius / 4 * math.abs(arrayToEvenField(hand)[i] / (hand.size() ** 0.02))) * cos(angle)
-        ));
+        .add(this.instance.Table.Top.CFrame.LookVector.mul((radius / 4 * math.abs(arrayToEvenField(hand)[i] / (hand.size() ** 0.02))) * cos(angle)))
+        .add(this.instance.Table.Top.CFrame.UpVector.mul((this.instance.Table.Top.Size.Y / 2) + ((hand.size() - i) * cardModel.Size.X)));
 
       cardModel.CFrame = cframe;
-      cardModel.Orientation = cardModel.Orientation.add(this.instance.Table.Top.Orientation).add(new Vector3(0, 0, 90));
+      cardModel.Orientation = cardModel.Orientation.add(this.instance.Table.Top.Orientation).add(new Vector3(0, -90, -90));
       cardModel.Parent = World.GameProps.Cards.Uno.Hands;
       this.addCardInteraction(card, cardModel, cframe);
     }
   }
 
   private addCardInteraction(card: CardType, cardModel: BasePart, cframe: CFrame): void {
-    const { turnBased } = getGameInfo(card.game);
     const clickDetector = new Instance("ClickDetector", cardModel);
     const selectionBox = this.createSelectionBox(cardModel);
 
-    clickDetector.MouseClick.Connect(() => {
-      if (turnBased && this.turn !== Player) return;
+    clickDetector.MouseClick.Connect(async () => {
+      // TODO: fix
+      if (!await Functions.games.cards.canPlayCard(this.getID(), card)) return;
       this.playCard(card, cardModel);
     });
     clickDetector.MouseHoverEnter.Connect(() => {

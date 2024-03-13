@@ -1,7 +1,6 @@
 import { Networking } from "@flamework/networking";
 import { DataKey, DataValue, GameDataModel } from "./data-models/generic";
-import type { CardGame } from "./structs/game-types";
-import type CardType from "./structs/card-type";
+import type CardType from "./structs/cards/card-type";
 
 interface ServerEvents {
   data: {
@@ -27,7 +26,7 @@ interface ClientEvents {
     ejectOccupant(tableID: string): void;
     turnChanged(tableID: string, turn: Player): void;
     cards: {
-      addHand<Card extends CardType = CardType, CardGameType extends CardGame = CardGame>(tableID: string, hand: Card[]): void;
+      addHand(tableID: string, hand: CardType[]): void;
     };
   };
 }
@@ -35,6 +34,11 @@ interface ClientEvents {
 interface ServerFunctions {
   data: {
     get(key: DataKey): DataValue;
+  };
+  games: {
+    cards: {
+      canPlayCard(tableID: string, card: CardType): boolean;
+    };
   };
 }
 

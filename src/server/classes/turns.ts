@@ -21,8 +21,16 @@ export default class Turns extends Startable {
     }));
   }
 
+  public is(player: Player): boolean {
+    return player === this.getCurrentPlayer();
+  }
+
+  public getCurrentPlayer(): Player {
+    return this._game._table.getSatPlayers()[this.index];
+  }
+
   private changed(): void {
-    const turn = this._game._table.getSatPlayers()[this.index];
+    const turn = this.getCurrentPlayer();
     Events.games.turnChanged.broadcast(this._game._table.id, turn);
     Log.info(`It is now ${turn.Name}'s turn`);
   }
