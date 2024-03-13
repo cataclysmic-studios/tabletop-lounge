@@ -18,6 +18,7 @@ export default abstract class CardGame<G extends GameType.CardGame> extends Base
   private readonly cardsStorage = World.GameProps.Cards.FindFirstChild(this._table.attributes.Game)!;
   private readonly hands: Record<number, BasePart[]> = {};
 
+  protected readonly cardPlayed = new Signal<(card: GameToCard[G]) => void>;
   protected deck: BasePart[] = [];
   protected lastCardPlayed?: BasePart;
 
@@ -95,9 +96,11 @@ export default abstract class CardGame<G extends GameType.CardGame> extends Base
 
     tween(cardModel, new TweenInfoBuilder().SetTime(0.35), {
       Position: basePosition.add(this.playedPileOffset),
-      Orientation: cardModel.Orientation.add(this.tableTop.Orientation)
+      Orientation: cardModel.Orientation.add(this.tableTop.Orientation).add(new Vector3(0, 90, 0))
     });
+
     this.lastCardPlayed = cardModel;
+    this.cardPlayed.Fire(card);
   }
 
   protected addToDeck(card: BasePart, times: number): void {

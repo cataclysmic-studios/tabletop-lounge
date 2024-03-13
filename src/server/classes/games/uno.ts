@@ -14,29 +14,40 @@ const STACKING_ALLOWED = false; // standard uno
 
 export default class Uno extends CardGame<Game.Uno> {
   public static readonly name = Game.Uno;
+
   protected readonly playedPileOffset = this.tableTop.CFrame.LookVector.mul(-CARD_PILE_DISTANCE);
   protected readonly drawPileOffset = this.tableTop.CFrame.LookVector.mul(CARD_PILE_DISTANCE);
   protected readonly handSize = 7;
+
   private readonly turns = new Turns(this);
+  private currentSuit = UnoSuit.Wild;
 
   public start(): void {
     super.start();
     this.turns.start();
     task.delay(0.5, () => this.placeFirstCard());
+    this.janitor.Add(this.cardPlayed.Connect(card => this.currentSuit = card.suit));
   }
 
   protected canPlayCard(player: Player, card: UnoCard): boolean {
     const lastCard = this.getLastCardObject();
+    const validMatch = lastCard.name === card.name || this.currentSuit === card.suit;
     let canPlayCard = this.isTurn(player, card.game);
+
     if (this.isNumberCard(lastCard) && this.isNumberCard(card))
-      canPlayCard &&= lastCard.name === card.name;
+      canPlayCard &&= validMatch;
     else {
       const lastCardWasDrawCard = lastCard.name === "DrawFour" || lastCard.name === "DrawTwo";
       const attemptingToStack = (lastCard.name === "DrawFour" && card.name === "DrawFour") || (lastCard.name === "DrawTwo" && card.name === "DrawTwo");
       if (lastCardWasDrawCard)
-        canPlayCard &&= attemptingToStack && STACKING_ALLOWED;
-      else
-        canPlayCard &&= lastCard.suit === UnoSuit.Wild ? true : lastCard.name === card.name;
+        if (attemptingToStack)
+          canPlayCard &&= STACKING_ALLOWED;
+        else
+          canPlayCard &&= (lastCard.name === "DrawTwo" ? validMatch : true);
+      else {
+        const lastOrCurrentCardIsWild = this.currentSuit === UnoSuit.Wild || card.suit === UnoSuit.Wild;
+        canPlayCard &&= lastOrCurrentCardIsWild ? true : validMatch;
+      }
     }
 
     // if it's a card without a suit, e.x. wildcard, you can play any card on it
@@ -57,7 +68,7 @@ export default class Uno extends CardGame<Game.Uno> {
   private placeFirstCard(): void {
     const cardModel = this.deck.pop()!;
     const card = getCardObject(Game.Uno, cardModel);
-    this.playCard(card, cardModel.CFrame.mul(CFrame.Angles(0, 0, math.rad(90))));
+    this.playCard(card, cardModel.CFrame.mul(CFrame.Angles(math.rad(90), 0, math.rad(180))));
   }
 
   private isTurn(player: Player, _game: Game): boolean {

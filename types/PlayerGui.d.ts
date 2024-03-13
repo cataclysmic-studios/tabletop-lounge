@@ -1,8 +1,10 @@
 interface PlayerGui extends BasePlayerGui {
 	Games: Folder & {
-		Blackjack: ScreenGui;
-		Uno: ScreenGui;
-		Chess: ScreenGui;
+		Uno: ScreenGui & {
+			Draw: TextButton & {
+				Title: TextLabel;
+			};
+		};
 	};
 	Menu: ScreenGui;
 	LoadScreen: ScreenGui & {
