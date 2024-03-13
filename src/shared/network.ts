@@ -1,5 +1,6 @@
 import { Networking } from "@flamework/networking";
 import { DataKey, DataValue, GameDataModel } from "./data-models/generic";
+import type { GitHubInfo } from "./structs/github";
 import type CardType from "./structs/cards/card-type";
 
 interface ServerEvents {
@@ -42,6 +43,14 @@ interface ServerFunctions {
     cards: {
       canPlayCard(tableID: string, card: CardType): boolean;
     };
+  };
+  external: {
+    github: {
+      getInfo(): GitHubInfo;
+    };
+    analytics: {
+
+    }
   };
 }
 
