@@ -1,11 +1,11 @@
+import { Events } from "server/network";
 import { Assets, isNaN } from "shared/utilities/helpers";
 import { getCardObject, getGameInfo } from "shared/utilities/game";
-import { UnoCard, UnoSuit } from "shared/structs/cards/games/uno";
+import { type UnoCard, UnoSuit } from "shared/structs/cards/games/uno";
 import CardGame from "../base-games/card-game";
 import Game from "shared/structs/game";
 import Turns from "../turns";
 import type CardType from "shared/structs/cards/card-type";
-import { Events } from "server/network";
 
 const COLORED_CARDS = 2;
 const WILDCARDS = 4;
@@ -28,8 +28,21 @@ export default class Uno extends CardGame<Game.Uno> {
     super.start();
     this.turns.start();
     task.delay(0.5, () => this.placeFirstCard());
-    this.janitor.Add(this.cardPlayed.Connect(card => this.currentSuit = card.suit));
+    this.janitor.Add(this.cardPlayed.Connect(card => {
+      this.currentSuit = card.suit;
+      this.updateDrawButtonVisibility();
+    }));
+    this.janitor.Add(this.cardDrew.Connect(() => this.updateDrawButtonVisibility()));
     Events.games.cards.toggleGameUI.fire(this._table.getSatPlayers(), Game.Uno, true);
+  }
+
+  private updateDrawButtonVisibility(): void {
+    for (const participant of this._table.getSatPlayers()) {
+      const isTurn = this.turns.is(participant);
+      const hand = this.getHand(participant);
+      const noCardsToPlay = hand.every(card => !this.canPlayCard(participant, card)) && hand.size() !== 0;
+      Events.games.cards.toggleDrawButton(participant, Game.Uno, isTurn && noCardsToPlay);
+    }
   }
 
   protected canPlayCard(player: Player, card: UnoCard): boolean {
@@ -53,7 +66,6 @@ export default class Uno extends CardGame<Game.Uno> {
       }
     }
 
-    // TODO: if we cannot play the card, enable the draw card button
     // if it's a card without a suit, e.x. wildcard, you can play any card on it
     return canPlayCard;
   }

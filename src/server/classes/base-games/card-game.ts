@@ -13,12 +13,14 @@ import type GameType from "shared/structs/game-types";
 import type GameToCard from "shared/structs/cards/game-to-card";
 
 import type { ServerBaseGameTable } from "server/base-components/base-game-table";
+import Object from "@rbxts/object-utils";
 
 export default abstract class CardGame<G extends GameType.CardGame> extends BaseGame {
   private readonly cardsStorage = World.GameProps.Cards.FindFirstChild(this._table.attributes.Game)!;
-  private readonly hands: Record<number, BasePart[]> = {};
+  private readonly hands: Record<number, GameToCard[G][]> = {};
 
   protected readonly cardPlayed = new Signal<(card: GameToCard[G]) => void>;
+  protected readonly cardDrew = new Signal<(card: GameToCard[G]) => void>;
   protected deck: BasePart[] = [];
   protected lastCardPlayed?: BasePart;
 
@@ -58,16 +60,19 @@ export default abstract class CardGame<G extends GameType.CardGame> extends Base
       if (card.game !== this._table.attributes.Game)
         throw new Exception("PlayedInvalidCard", `${player.Name} tried to play a(n) ${card.game} card in ${this._table.attributes.Game}`);
 
+      this.removeCardFromHand(player, <GameToCard[G]>card);
       this.playCard(<GameToCard[G]>card, cframe);
     }));
   }
 
   protected createHands(): void {
     for (const player of this._table.getSatPlayers()) {
-      const hand = slice(this.deck, -this.handSize);
+      const cardsFromDeck = slice(this.deck, -this.handSize);
+      const hand = cardsFromDeck.map(cardModel => getCardObject<G>(<G>this._table.attributes.Game, cardModel))
       this.hands[player.UserId] = hand;
-      Events.games.cards.addHand(player, this._table.id, hand.map(card => getCardObject(this._table.attributes.Game, card)));
-      for (const card of hand) {
+
+      Events.games.cards.addHand(player, this._table.id, hand);
+      for (const card of cardsFromDeck) {
         this.deck.remove(this.deck.indexOf(card));
         card.Destroy();
       }
@@ -93,9 +98,11 @@ export default abstract class CardGame<G extends GameType.CardGame> extends Base
     const cardModel = this.deck.pop()!;
     const card = getCardObject<G>(<G>this._table.attributes.Game, cardModel);
     Events.games.cards.draw(player, this._table.id, card);
+    this.addCardToHand(player, card);
+    this.cardDrew.Fire(card);
   }
 
-  protected playCard(card: GameToCard[G], cframe: CFrame) {
+  protected playCard(card: GameToCard[G], cframe: CFrame): void {
     const cardModel = getCardModel(card).Clone();
     cardModel.CFrame = cframe;
     cardModel.Parent = this.cardsStorage.FindFirstChild("Table")?.FindFirstChild("Played");
@@ -127,7 +134,7 @@ export default abstract class CardGame<G extends GameType.CardGame> extends Base
     return getCardObject<G>(<G>this._table.attributes.Game, this.lastCardPlayed!);
   }
 
-  protected getHand(player: Player): BasePart[] {
+  protected getHand(player: Player): GameToCard[G][] {
     return this.hands[player.UserId];
   }
 
@@ -138,5 +145,24 @@ export default abstract class CardGame<G extends GameType.CardGame> extends Base
   private getCardTablePosition(card: BasePart): Vector3 {
     return this.tableTop.Position
       .add(new Vector3(0, this.tableTop.Size.Y / 2 + card.Size.X / 2, 0));
+  }
+
+  private removeCardFromHand(player: Player, card: GameToCard[G]): void {
+    const hand = this.getHand(player);
+    const filtered = hand.filter(other => !this.cardEquals(card, other));
+    this.hands[player.UserId] = filtered;
+  }
+
+  private addCardToHand(player: Player, card: GameToCard[G]): void {
+    const hand = this.getHand(player);
+    hand.push(card);
+    this.hands[player.UserId] = hand;
+  }
+
+  private cardEquals(a: GameToCard[G], b: GameToCard[G]): boolean {
+    return Object.entries(a).every(entry => {
+      const [key, value] = <[keyof GameToCard[G], GameToCard[G][keyof GameToCard[G]]]>entry;
+      return b[key] === value;
+    });
   }
 }
