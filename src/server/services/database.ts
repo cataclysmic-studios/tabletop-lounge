@@ -54,7 +54,7 @@ export class DatabaseService implements OnInit, LogStart {
 		this.set(player, directory, value);
 	}
 
-	private getDirectoryForPlayer(player: Player, directory: string) {
+	private getDirectoryForPlayer(player: Player, directory: string): string {
 		return `${player.UserId}/${directory}`;
 	}
 }

@@ -86,7 +86,6 @@ function FirebaseService:fetch(name, database)
 		end
 	end
 
-	print("fetched firebase")
 	return Firebase;
 end
 
