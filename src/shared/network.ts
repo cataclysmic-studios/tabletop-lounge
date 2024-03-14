@@ -1,5 +1,5 @@
 import { Networking } from "@flamework/networking";
-import type { DataKey, DataValue, GameDataModel } from "./data-models/generic";
+import type { DataValue } from "./data-models/generic";
 import type { GitHubInfo } from "./structs/github";
 import type CardType from "./structs/cards/card-type";
 import type Game from "./structs/game";
@@ -7,8 +7,8 @@ import type Game from "./structs/game";
 interface ServerEvents {
   data: {
     initialize(): void;
-    set(key: DataKey, value: DataValue): void;
-    increment(key: ExtractKeys<GameDataModel, number>, amount?: number): void;
+    set(directory: string, value: DataValue): void;
+    increment(directory: string, amount?: number): void;
   };
   games: {
     advanceTurn(tableID: string): void;
@@ -39,7 +39,7 @@ interface ClientEvents {
 
 interface ServerFunctions {
   data: {
-    get(key: DataKey): DataValue;
+    get(directory: string): DataValue;
   };
   games: {
     cards: {

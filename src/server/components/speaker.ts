@@ -7,6 +7,7 @@ export class Speaker extends BaseComponent<{}, BasePart> implements OnStart {
   private readonly audio = new Instance("Sound", this.instance);
 
   public onStart(): void {
+    this.audio.RollOffMaxDistance = 50;
     this.audio.SoundGroup = Sound.Speakers;
   }
 

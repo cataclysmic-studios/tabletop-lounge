@@ -3,7 +3,7 @@ import Signal from "@rbxts/signal";
 
 import { DataValue } from "shared/data-models/generic";
 import { Events, Functions } from "server/network";
-import Firebase from "server/classes/firebase";
+import Firebase from "./firebase";
 import Log from "shared/logger";
 
 import type { LogStart } from "shared/hooks";
