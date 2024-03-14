@@ -7,7 +7,6 @@ import type Game from "./structs/game";
 interface ServerEvents {
   data: {
     initialize(): void;
-    loaded(): void;
     set(key: DataKey, value: DataValue): void;
     increment(key: ExtractKeys<GameDataModel, number>, amount?: number): void;
   };
@@ -22,7 +21,7 @@ interface ServerEvents {
 
 interface ClientEvents {
   data: {
-    update(key: DataKey, value: DataValue): void;
+    updated(directory: string, value: DataValue): void;
   };
   games: {
     toggleCamera(tableID: string, on: boolean): void;
