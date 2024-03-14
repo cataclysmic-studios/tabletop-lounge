@@ -1,11 +1,11 @@
---TODO: store in datastore
---== Configuration;
-local defaultDatabase = "https://roblox-tabletop-lounge-default-rtdb.firebaseio.com/"; -- Set your database link
-local authenticationToken = "9vql32DWOoZGjQzOiO28XWGhsexcPN8ejId8FsTF"; -- Authentication Token
-
 --== Variables;
 local HttpService = game:GetService("HttpService");
 local DataStoreService = game:GetService("DataStoreService");
+local FirebaseInfo = DataStoreService:GetDataStore("FirebaseInfo");
+
+--== Configuration;
+local defaultDatabase = FirebaseInfo:GetAsync("DB_URL"); -- Set your database link
+local authenticationToken = FirebaseInfo:GetAsync("DB_AUTH"); -- Authentication Token
 
 local FirebaseService = {};
 local UseFirebase = true;
